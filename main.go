@@ -253,6 +253,8 @@ func main() {
 	signal.Notify(term, unix.SIGTERM)
 	signal.Notify(term, os.Interrupt)
 
+	go loadConfig(device, errs, logger)
+
 	select {
 	case <-term:
 	case <-errs:
