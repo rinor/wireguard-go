@@ -566,7 +566,11 @@ func CreateTUN(name string, mtu int) (Device, error) {
 	ifr.SetUint16(unix.IFF_TUN | unix.IFF_NO_PI | unix.IFF_VNET_HDR)
 	err = unix.IoctlIfreq(nfd, unix.TUNSETIFF, ifr)
 	if err != nil {
-		return nil, err
+		ifr.SetUint16(unix.IFF_TUN | unix.IFF_NO_PI) // NANOVMS(tun): doen't support IFF_VNET_HDR (TUNSETOFFLOAD)
+		err = unix.IoctlIfreq(nfd, unix.TUNSETIFF, ifr)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	err = unix.SetNonblock(nfd, true)
